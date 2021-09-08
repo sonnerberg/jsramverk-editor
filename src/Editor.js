@@ -9,7 +9,6 @@ export const Editor = () => {
   const handleChange = editorText => {
     setEditorText(editorText);
   };
-  console.log('state', editorText);
   return (
     <div className="text-editor">
       <EditorToolbar />
