@@ -1,43 +1,56 @@
-import logo from "./logo.svg";
-import "./App.css";
-import Editor from "./Editor.js";
-import { useEffect, useState } from "react";
+import './App.css';
+import Editor from './Editor.js';
+import { AllDocumentsList } from './AllDocumentsList';
+import { useReducer, useState } from 'react';
 
-function AllDocumentsList() {
-  const [allDocuments, setAllDocuments] = useState([]);
-  useEffect(() => {
-    fetch("http://localhost:1337/api/v1/")
-      .then((response) => response.json())
-      .then((result) => setAllDocuments(result.data));
-  }, []);
-
-  function handleClick(event, name) {
-    event.preventDefault();
-    console.log(event.target.innerText, name);
+function documentReducer(state, action) {
+  switch (action.type) {
+    case 'field':
+      return {
+        ...state,
+        [action.fieldName]: action.payload,
+      };
+    default:
+      return state;
   }
-
-  return (
-    <div>
-      {allDocuments.map(({ _id: id, name, html }) => (
-        <div
-          key={id}
-          // onClick={handleClick}
-          onClick={(event) => {
-            handleClick(event, html);
-          }}
-        >
-          {name}
-        </div>
-      ))}
-    </div>
-  );
 }
 
+const initialState = {
+  documentId: null,
+  editorText: null,
+  documentName: '',
+};
+
 function App() {
+  const [documentId, setDocumentId] = useState(null);
+  const [editorText, setEditorText] = useState(null);
+  const [documentName, setDocumentName] = useState('');
+  const [state, dispatch] = useReducer(documentReducer, initialState);
   return (
     <>
-      <AllDocumentsList />
-      <Editor />
+      <AllDocumentsList
+        setDocumentId={setDocumentId}
+        setEditorText={setEditorText}
+        setDocumentName={setDocumentName}
+      />
+      <button
+        type="button"
+        onClick={() => {
+          setDocumentId(null);
+          setEditorText(null);
+          setDocumentName('');
+        }}
+      >
+        New document
+      </button>
+      <Editor
+        setDocumentId={setDocumentId}
+        documentId={documentId}
+        editorText={editorText}
+        setEditorText={setEditorText}
+        documentName={documentName}
+        setDocumentName={setDocumentName}
+      />
     </>
   );
 }
