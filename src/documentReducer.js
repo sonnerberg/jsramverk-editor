@@ -1,9 +1,12 @@
+export const TIME_FOR_CLEARING_SETTIMEOUT = 2500;
+
 export const RESET = 'RESET';
 export const FIELD = 'FIELD';
 export const EDIT = 'EDIT';
 export const SUCCESS = 'SUCCESS';
 export const ERROR = 'ERROR';
 export const CLEAR_ERROR = 'CLEAR_ERROR';
+export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
 export const UPDATE_ALL_DOCUMENTS = 'UPDATE_ALL_DOCUMENTS';
 
 export const initialState = {
@@ -45,6 +48,11 @@ export function documentReducer(state, action) {
           allDocuments,
         };
       }
+    case CLEAR_SUCCESS:
+      return {
+        ...state,
+        success: '',
+      };
     case CLEAR_ERROR:
       return {
         ...state,

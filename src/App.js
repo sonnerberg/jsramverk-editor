@@ -1,45 +1,55 @@
 import './App.css';
 import Editor from './Editor.js';
 import { AllDocumentsList } from './AllDocumentsList';
-import { useReducer, useState } from 'react';
-import { documentReducer, initialState, RESET } from './documentReducer';
+import { useReducer } from 'react';
+import { documentReducer, initialState } from './documentReducer';
 
 function App() {
-  const [documentId, setDocumentId] = useState(null);
-  const [editorText, setEditorText] = useState(null);
-  const [documentName, setDocumentName] = useState('');
-  const [state, dispatch] = useReducer(documentReducer, initialState);
+  const [
+    { documentId, editorText, documentName, allDocuments, success, error },
+    dispatch,
+  ] = useReducer(documentReducer, initialState);
   return (
     <>
-      {state.error ? <div style={{ color: 'red' }}>{state.error}</div> : null}
-      <AllDocumentsList
-        // setDocumentId={setDocumentId}
-        // setEditorText={setEditorText}
-        // setDocumentName={setDocumentName}
-        dispatch={dispatch}
-        state={state}
-      />
-      <button
-        type="button"
-        onClick={() => {
-          // setDocumentId(null);
-          // setEditorText(null);
-          // setDocumentName('');
-          dispatch({ type: RESET });
-        }}
-      >
-        New document
-      </button>
+      {error ? (
+        <div
+          style={{
+            color: 'red',
+            position: 'absolute',
+            top: '0',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+          }}
+        >
+          {error}
+        </div>
+      ) : null}
+      {success ? (
+        <div
+          style={{
+            color: 'green',
+            position: 'absolute',
+            top: '0',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+          }}
+        >
+          {success}
+        </div>
+      ) : null}
       <Editor
-        setDocumentId={setDocumentId}
         documentId={documentId}
         editorText={editorText}
-        setEditorText={setEditorText}
         documentName={documentName}
-        setDocumentName={setDocumentName}
-        state={state}
         dispatch={dispatch}
       />
+      <AllDocumentsList dispatch={dispatch} allDocuments={allDocuments} />
     </>
   );
 }

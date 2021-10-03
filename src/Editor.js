@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css';
 import { FIELD } from './documentReducer';
 // import "./styles.css";
 
-export const Editor = ({ setDocumentId, state, dispatch }) => {
+export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
   const handleChange = (editorText) => {
     dispatch({
       type: FIELD,
@@ -22,22 +22,25 @@ export const Editor = ({ setDocumentId, state, dispatch }) => {
     <>
       <div className="text-editor">
         <EditorToolbar
-          documentName={state.documentName}
-          editorText={state.editorText}
-          documentId={state.documentId}
-          setDocumentId={setDocumentId}
+          documentName={documentName}
+          editorText={editorText}
+          documentId={documentId}
           dispatch={dispatch}
         />
         <input
+          style={{ width: '100%' }}
+          placeholder={'Insert document name'}
           type="text"
-          value={state.documentName}
+          value={documentName}
           onChange={handleDocumentNameChange}
         />
         <ReactQuill
           theme="snow"
-          value={state.editorText}
+          value={editorText}
           onChange={handleChange}
-          placeholder={'Write something awesome...'}
+          placeholder={
+            'Write something awesome or choose a saved document below...'
+          }
           modules={modules}
           formats={formats}
         />
