@@ -2,24 +2,7 @@ import './App.css';
 import Editor from './Editor.js';
 import { AllDocumentsList } from './AllDocumentsList';
 import { useReducer, useState } from 'react';
-
-function documentReducer(state, action) {
-  switch (action.type) {
-    case 'field':
-      return {
-        ...state,
-        [action.fieldName]: action.payload,
-      };
-    default:
-      return state;
-  }
-}
-
-const initialState = {
-  documentId: null,
-  editorText: null,
-  documentName: '',
-};
+import { documentReducer, initialState, RESET } from './documentReducer';
 
 function App() {
   const [documentId, setDocumentId] = useState(null);
@@ -28,17 +11,21 @@ function App() {
   const [state, dispatch] = useReducer(documentReducer, initialState);
   return (
     <>
+      {state.error ? <div style={{ color: 'red' }}>{state.error}</div> : null}
       <AllDocumentsList
-        setDocumentId={setDocumentId}
-        setEditorText={setEditorText}
-        setDocumentName={setDocumentName}
+        // setDocumentId={setDocumentId}
+        // setEditorText={setEditorText}
+        // setDocumentName={setDocumentName}
+        dispatch={dispatch}
+        state={state}
       />
       <button
         type="button"
         onClick={() => {
-          setDocumentId(null);
-          setEditorText(null);
-          setDocumentName('');
+          // setDocumentId(null);
+          // setEditorText(null);
+          // setDocumentName('');
+          dispatch({ type: RESET });
         }}
       >
         New document
@@ -50,6 +37,8 @@ function App() {
         setEditorText={setEditorText}
         documentName={documentName}
         setDocumentName={setDocumentName}
+        state={state}
+        dispatch={dispatch}
       />
     </>
   );

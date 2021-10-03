@@ -1,4 +1,10 @@
 import React from 'react';
+import {
+  CLEAR_ERROR,
+  ERROR,
+  FIELD,
+  UPDATE_ALL_DOCUMENTS,
+} from './documentReducer';
 // import { Quill } from "react-quill";
 
 // Custom Undo button icon component for Quill editor. You can import it directly
@@ -55,7 +61,7 @@ function saveToDatabase({
   documentId: id,
   documentName: name,
   editorText: html,
-  setDocumentId,
+  dispatch,
 }) {
   let requestOptions;
   let fetchURL;
@@ -81,13 +87,52 @@ function saveToDatabase({
       }),
     };
   }
-  fetch(fetchURL, requestOptions)
-    .then((response) => response.json())
-    .then((result) =>
-      result.data
-        ? setDocumentId(result.data.id)
-        : console.error(result.errors.message)
-    );
+  const type = FIELD;
+  const fieldName = 'documentId';
+  if (name) {
+    fetch(fetchURL, requestOptions)
+      .then((response) => response.json())
+      .then((result) =>
+        result.data
+          ? result.data.id
+            ? (dispatch({
+                type,
+                fieldName,
+                payload: result.data.id,
+              }),
+              dispatch({
+                type: UPDATE_ALL_DOCUMENTS,
+                payload: { _id: result.data.id, name, html },
+              }))
+            : (dispatch({
+                type,
+                fieldName,
+                payload: result.data.value._id,
+              }),
+              dispatch({
+                type: UPDATE_ALL_DOCUMENTS,
+                payload: { _id: result.data.value._id, name, html },
+              }))
+          : //  setDocumentId(result.data.id)
+            (console.error(result.errors.message),
+            dispatch({ type: ERROR, payload: result.errors.message }),
+            setTimeout(() => {
+              dispatch({ type: CLEAR_ERROR });
+            }, 5000))
+      )
+      .catch((error) => {
+        dispatch({ type: ERROR, payload: error.message });
+        setTimeout(() => {
+          dispatch({ type: CLEAR_ERROR });
+        }, 5000);
+      });
+  } else {
+    dispatch({ type: ERROR, payload: 'Document name is empty' });
+    setTimeout(() => {
+      dispatch({ type: CLEAR_ERROR });
+    }, 5000);
+    console.error('Document name is empty');
+  }
 }
 
 // Add sizes to whitelist and register them
@@ -152,6 +197,7 @@ export const QuillToolbar = ({
   editorText,
   documentId,
   setDocumentId,
+  dispatch,
 }) => {
   return (
     <div id="toolbar">
@@ -225,7 +271,8 @@ export const QuillToolbar = ({
               documentName,
               editorText,
               documentId,
-              setDocumentId,
+              // setDocumentId,
+              dispatch,
             });
           }}
         >
