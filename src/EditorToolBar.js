@@ -84,8 +84,13 @@ function saveToDatabase({
 }) {
   let requestOptions;
   let fetchURL;
+  if (process.env.NODE_ENV === 'production') {
+    fetchURL = 'https://jsramverk-editor-pene14.azurewebsites.net/api/v1';
+  } else {
+    fetchURL = 'http://localhost:1337/api/v1';
+  }
   if (!id) {
-    fetchURL = 'http://localhost:1337/api/v1/create';
+    fetchURL = `${fetchURL}/create`;
     requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -95,7 +100,7 @@ function saveToDatabase({
       }),
     };
   } else {
-    fetchURL = 'http://localhost:1337/api/v1/update';
+    fetchURL = `${fetchURL}/update`;
     requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
