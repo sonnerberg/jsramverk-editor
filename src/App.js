@@ -3,6 +3,8 @@ import Editor from './Editor.js';
 import { AllDocumentsList } from './AllDocumentsList';
 import { useReducer } from 'react';
 import { documentReducer, initialState } from './documentReducer';
+import { ErrorMessage } from './ErrorMessage';
+import { SuccessMessage } from './SuccessMessage';
 
 function App() {
   const [
@@ -11,38 +13,8 @@ function App() {
   ] = useReducer(documentReducer, initialState);
   return (
     <>
-      {error ? (
-        <div
-          style={{
-            color: 'red',
-            position: 'absolute',
-            top: '0',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            left: 0,
-            right: 0,
-            textAlign: 'center',
-          }}
-        >
-          {error}
-        </div>
-      ) : null}
-      {success ? (
-        <div
-          style={{
-            color: 'green',
-            position: 'absolute',
-            top: '0',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            left: 0,
-            right: 0,
-            textAlign: 'center',
-          }}
-        >
-          {success}
-        </div>
-      ) : null}
+      {error ? <ErrorMessage error={error} /> : null}
+      {success ? <SuccessMessage success={success} /> : null}
       <Editor
         documentId={documentId}
         editorText={editorText}
