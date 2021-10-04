@@ -9,6 +9,7 @@ import {
   TIME_FOR_CLEARING_SETTIMEOUT,
   UPDATE_ALL_DOCUMENTS,
 } from './documentReducer';
+import { getFetchURL } from './utils/getFetchURL';
 // import { Quill } from "react-quill";
 
 // Custom Undo button icon component for Quill editor. You can import it directly
@@ -83,12 +84,7 @@ function saveToDatabase({
   dispatch,
 }) {
   let requestOptions;
-  let fetchURL;
-  if (process.env.NODE_ENV === 'production') {
-    fetchURL = 'https://jsramverk-editor-pene14.azurewebsites.net/api/v1';
-  } else {
-    fetchURL = 'http://localhost:1337/api/v1';
-  }
+  let fetchURL = getFetchURL();
   if (!id) {
     fetchURL = `${fetchURL}/create`;
     requestOptions = {
