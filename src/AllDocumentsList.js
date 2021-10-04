@@ -2,8 +2,14 @@ import { useEffect } from 'react';
 import { EDIT, FIELD } from './documentReducer';
 
 export function AllDocumentsList({ dispatch, allDocuments }) {
+  let fetchURL;
+  if (process.env.NODE_ENV === 'production') {
+    fetchURL = 'https://jsramverk-editor-pene14.azurewebsites.net/api/v1';
+  } else {
+    fetchURL = 'http://localhost:1337/api/v1';
+  }
   useEffect(() => {
-    fetch('http://localhost:1337/api/v1/')
+    fetch(fetchURL)
       .then((response) => response.json())
       .then((result) =>
         result.data
@@ -14,7 +20,7 @@ export function AllDocumentsList({ dispatch, allDocuments }) {
             })
           : console.error(result.errors.message)
       );
-  }, [dispatch]);
+  }, [dispatch, fetchURL]);
 
   function handleClick(event, { id, name, html }) {
     event.preventDefault();
