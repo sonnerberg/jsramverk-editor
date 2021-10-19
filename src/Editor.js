@@ -28,6 +28,7 @@ export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
           dispatch={dispatch}
         />
         <input
+          id="documentName"
           style={{ width: '100%' }}
           placeholder={'Insert document name'}
           type="text"
