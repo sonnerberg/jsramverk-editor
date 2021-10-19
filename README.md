@@ -1,6 +1,7 @@
 # Quill Copy Paste
 
 [![Build Status](https://app.travis-ci.com/sonnerberg/jsramverk-editor.svg?branch=main)](https://app.travis-ci.com/sonnerberg/jsramverk-editor)
+[![Coverage Status](https://coveralls.io/repos/github/sonnerberg/jsramverk-editor/badge.svg?branch=main)](https://coveralls.io/github/sonnerberg/jsramverk-editor?branch=main)
 
 This project is copied from [React Quill Editor with full toolbar options and custom buttons (undo & redo) | by Mike Calugaru | Medium](https://medium.com/@mircea.calugaru/react-quill-editor-with-full-toolbar-options-and-custom-buttons-undo-redo-176d79f8d375) and modified to fit requirements.
 
