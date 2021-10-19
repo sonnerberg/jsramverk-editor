@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { render } from '@testing-library/react';
-import { SuccessMessage } from '../SuccessMessage.js';
+import { SuccessMessage } from './SuccessMessage.js';
 
 test('renders content', () => {
   const success = 'Success message';

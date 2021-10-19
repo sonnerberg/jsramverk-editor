@@ -1,8 +1,8 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { render, fireEvent } from '@testing-library/react';
-import { Editor } from '../Editor.js';
-import { RESET } from '../documentReducer.js';
+import { Editor } from './Editor.js';
+import { RESET } from './documentReducer.js';
 
 test('dispatches changes to document name and clears it', () => {
   const dispatch = jest.fn();

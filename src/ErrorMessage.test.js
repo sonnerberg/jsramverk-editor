@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { render } from '@testing-library/react';
-import { ErrorMessage } from '../ErrorMessage.js';
+import { ErrorMessage } from './ErrorMessage.js';
 
 test('renders content', () => {
   const error = 'Error message';
