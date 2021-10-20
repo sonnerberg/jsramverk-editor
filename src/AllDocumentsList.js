@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { EDIT, FIELD } from './documentReducer';
 import { getFetchURL } from './utils/getFetchURL';
+import parse from 'html-react-parser';
 
 export function AllDocumentsList({ dispatch, allDocuments }) {
   let fetchURL = getFetchURL();
@@ -38,7 +39,7 @@ export function AllDocumentsList({ dispatch, allDocuments }) {
             handleClick(event, { id, name, html });
           }}
         >
-          {name}
+          {parse(name)}
         </button>
       ))}
     </div>

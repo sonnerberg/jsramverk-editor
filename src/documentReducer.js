@@ -11,7 +11,7 @@ export const UPDATE_ALL_DOCUMENTS = 'UPDATE_ALL_DOCUMENTS';
 
 export const initialState = {
   documentId: null,
-  editorText: null,
+  editorText: '',
   documentName: '',
   allDocuments: [],
   success: '',
@@ -61,7 +61,10 @@ export function documentReducer(state, action) {
     case ERROR:
       return {
         ...state,
-        error: action.payload,
+        error:
+          action.payload === 'Document failed validation'
+            ? 'Both name and content needed'
+            : action.payload,
         success: '',
       };
     case SUCCESS:
@@ -80,8 +83,8 @@ export function documentReducer(state, action) {
     case RESET:
       return {
         ...state,
-        documentId: null,
-        editorText: null,
+        documentId: '',
+        editorText: '',
         documentName: '',
         success: '',
       };
