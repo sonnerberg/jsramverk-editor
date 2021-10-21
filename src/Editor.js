@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { FIELD } from './documentReducer.js';
+import { FIELD, UPDATE_ALL_DOCUMENTS } from './documentReducer.js';
 
-import { ClearButton } from './ClearButton';
-import { SaveButton } from './SaveButton';
+import { socket } from './socket.js';
+import { ToolBar } from './ToolBar';
 
 export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
   const handleChange = (editorText) => {
@@ -20,57 +20,75 @@ export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
     dispatch({ type: FIELD, fieldName: 'documentName', payload: stripNewLine });
   };
 
+  const emitDocument = () => {
+    socket.emit('doc', {
+      id: documentId,
+      name: documentName,
+      editorText,
+    });
+
+    if (documentId) {
+      dispatch({
+        type: UPDATE_ALL_DOCUMENTS,
+        payload: { _id: documentId, name: documentName, html: editorText },
+      });
+    }
+  };
+
+  useEffect(() => {
+    socket.on('doc', (data) => {
+      dispatch({
+        type: UPDATE_ALL_DOCUMENTS,
+        payload: { _id: data.id, name: data.name, html: data.editorText },
+      });
+      if (data.hasOwnProperty('editorText')) {
+        dispatch({
+          type: FIELD,
+          fieldName: 'editorText',
+          payload: data.editorText,
+        });
+      }
+      if (data.hasOwnProperty('name')) {
+        dispatch({
+          type: FIELD,
+          fieldName: 'documentName',
+          payload: data.name,
+        });
+      }
+    });
+  }, [dispatch]);
+
   return (
     <>
-      <ClearButton dispatch={dispatch}></ClearButton>
-      <SaveButton
+      <ToolBar
         documentId={documentId}
         editorText={editorText}
         documentName={documentName}
         dispatch={dispatch}
-      ></SaveButton>
-      <CKEditor
-        editor={ClassicEditor}
-        data={documentName}
-        onReady={(_editor) => {
-          // You can store the "editor" and use when it is needed.
-          // console.log('Editor is ready to use!', editor);
-        }}
-        // onChange={handleChange}
-        onChange={(_event, editor) => {
-          const data = editor.getData();
-          // console.log({ event, editor, data });
-          handleDocumentNameChange(data);
-        }}
-        onBlur={(_event, _editor) => {
-          // console.log('Blur.', editor);
-        }}
-        onFocus={(_event, _editor) => {
-          // console.log('Focus.', editor);
-        }}
-        config={{
-          toolbar: ['bold', 'italic'],
-        }}
       />
-      <CKEditor
-        editor={ClassicEditor}
-        data={editorText}
-        onReady={(_editor) => {
-          // You can store the "editor" and use when it is needed.
-          // console.log('Editor is ready to use!', editor);
-        }}
-        onChange={(_event, editor) => {
-          const data = editor.getData();
-          // console.log({ event, editor, data });
-          handleChange(data);
-        }}
-        onBlur={(_event, _editor) => {
-          // console.log('Blur.', editor);
-        }}
-        onFocus={(_event, _editor) => {
-          // console.log('Focus.', editor);
-        }}
-      />
+      <div onKeyUp={emitDocument}>
+        <CKEditor
+          editor={ClassicEditor}
+          data={documentName}
+          onChange={(_event, editor) => {
+            const data = editor.getData();
+            handleDocumentNameChange(data);
+          }}
+          config={{
+            toolbar: ['bold', 'italic'],
+          }}
+        />
+      </div>
+      <div onKeyUp={emitDocument}>
+        <CKEditor
+          editor={ClassicEditor}
+          data={editorText}
+          onChange={(_event, editor) => {
+            const data = editor.getData();
+            handleChange(data);
+          }}
+        />
+      </div>
     </>
   );
 };

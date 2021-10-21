@@ -8,6 +8,8 @@ export const ERROR = 'ERROR';
 export const CLEAR_ERROR = 'CLEAR_ERROR';
 export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
 export const UPDATE_ALL_DOCUMENTS = 'UPDATE_ALL_DOCUMENTS';
+export const JOIN_ROOM = 'JOIN_ROOM';
+export const LEAVE_ROOM = 'LEAVE_ROOM';
 
 export const initialState = {
   documentId: null,
@@ -16,10 +18,24 @@ export const initialState = {
   allDocuments: [],
   success: '',
   error: '',
+  joinedRooms: [],
 };
 
 export function documentReducer(state, action) {
   switch (action.type) {
+    case JOIN_ROOM:
+      return {
+        ...state,
+        joinedRooms: [...state.joinedRooms, action.payload],
+      };
+    case LEAVE_ROOM:
+      const joinedRooms = [...state.joinedRooms].filter(
+        (room) => room !== action.payload
+      );
+      return {
+        ...state,
+        joinedRooms,
+      };
     case FIELD:
       return {
         ...state,
@@ -31,6 +47,7 @@ export function documentReducer(state, action) {
         .map((doc) => doc._id)
         .includes(action.payload._id);
       if (!documentExists) {
+        // TODO: Emit document to connected sockets
         return {
           ...state,
           allDocuments: [...state.allDocuments, action.payload],

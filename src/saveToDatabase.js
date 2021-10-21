@@ -2,9 +2,11 @@ import {
   CLEAR_ERROR,
   ERROR,
   FIELD,
+  JOIN_ROOM,
   TIME_FOR_CLEARING_SETTIMEOUT,
   UPDATE_ALL_DOCUMENTS,
 } from './documentReducer';
+import { socket } from './socket';
 import { getFetchURL } from './utils/getFetchURL';
 
 export function saveToDatabase({
@@ -37,33 +39,38 @@ export function saveToDatabase({
       }),
     };
   }
-  const type = FIELD;
-  const fieldName = 'documentId';
   fetch(fetchURL, requestOptions)
     .then((response) => response.json())
     .then((result) =>
       result.data
         ? result.data.id
-          ? (dispatch({
-              type,
-              fieldName,
+          ? // Create a new document
+            (dispatch({
+              type: FIELD,
+              fieldName: 'documentId',
               payload: result.data.id,
             }),
             dispatch({
               type: UPDATE_ALL_DOCUMENTS,
               payload: { _id: result.data.id, name, html },
-            }))
-          : (dispatch({
-              type,
-              fieldName,
+            }),
+            socket.emit('join', { room: result.data.id }),
+            dispatch({
+              type: JOIN_ROOM,
+              payload: result.data.id,
+            }),
+            socket.emit('newDocument', { id: result.data.id }))
+          : // Update existing document
+            (dispatch({
+              type: FIELD,
+              fieldName: 'documentId',
               payload: result.data.value._id,
             }),
             dispatch({
               type: UPDATE_ALL_DOCUMENTS,
               payload: { _id: result.data.value._id, name, html },
             }))
-        : //  setDocumentId(result.data.id)
-          (console.error(result.errors.message),
+        : (console.error(result.errors.message),
           dispatch({ type: ERROR, payload: result.errors.message }),
           setTimeout(() => {
             dispatch({ type: CLEAR_ERROR });

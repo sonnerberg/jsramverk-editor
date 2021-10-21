@@ -8,9 +8,18 @@ import { SuccessMessage } from './SuccessMessage';
 
 function App() {
   const [
-    { documentId, editorText, documentName, allDocuments, success, error },
+    {
+      documentId,
+      editorText,
+      documentName,
+      allDocuments,
+      success,
+      error,
+      joinedRooms,
+    },
     dispatch,
   ] = useReducer(documentReducer, initialState);
+
   return (
     <>
       {error ? <ErrorMessage error={error} /> : null}
@@ -21,7 +30,11 @@ function App() {
         documentName={documentName}
         dispatch={dispatch}
       />
-      <AllDocumentsList dispatch={dispatch} allDocuments={allDocuments} />
+      <AllDocumentsList
+        dispatch={dispatch}
+        allDocuments={allDocuments}
+        joinedRooms={joinedRooms}
+      />
     </>
   );
 }
