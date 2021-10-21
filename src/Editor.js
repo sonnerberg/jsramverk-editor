@@ -32,21 +32,21 @@ export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
       <CKEditor
         editor={ClassicEditor}
         data={documentName}
-        onReady={(editor) => {
+        onReady={(_editor) => {
           // You can store the "editor" and use when it is needed.
-          console.log('Editor is ready to use!', editor);
+          // console.log('Editor is ready to use!', editor);
         }}
         // onChange={handleChange}
-        onChange={(event, editor) => {
+        onChange={(_event, editor) => {
           const data = editor.getData();
-          console.log({ event, editor, data });
+          // console.log({ event, editor, data });
           handleDocumentNameChange(data);
         }}
-        onBlur={(event, editor) => {
-          console.log('Blur.', editor);
+        onBlur={(_event, _editor) => {
+          // console.log('Blur.', editor);
         }}
-        onFocus={(event, editor) => {
-          console.log('Focus.', editor);
+        onFocus={(_event, _editor) => {
+          // console.log('Focus.', editor);
         }}
         config={{
           toolbar: ['bold', 'italic'],
@@ -55,20 +55,20 @@ export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
       <CKEditor
         editor={ClassicEditor}
         data={editorText}
-        onReady={(editor) => {
+        onReady={(_editor) => {
           // You can store the "editor" and use when it is needed.
-          console.log('Editor is ready to use!', editor);
+          // console.log('Editor is ready to use!', editor);
         }}
-        onChange={(event, editor) => {
+        onChange={(_event, editor) => {
           const data = editor.getData();
-          console.log({ event, editor, data });
+          // console.log({ event, editor, data });
           handleChange(data);
         }}
-        onBlur={(event, editor) => {
-          console.log('Blur.', editor);
+        onBlur={(_event, _editor) => {
+          // console.log('Blur.', editor);
         }}
-        onFocus={(event, editor) => {
-          console.log('Focus.', editor);
+        onFocus={(_event, _editor) => {
+          // console.log('Focus.', editor);
         }}
       />
     </>
