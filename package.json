@@ -24,7 +24,8 @@
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject",
     "build:copy": "yarn build && rsync -av --progress build ../backend/public",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "publish:bth": "bash ./publish.bash"
   },
   "eslintConfig": {
     "extends": [
