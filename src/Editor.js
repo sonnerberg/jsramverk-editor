@@ -6,7 +6,13 @@ import { FIELD, UPDATE_ALL_DOCUMENTS } from './documentReducer.js';
 import { socket } from './socket.js';
 import { ToolBar } from './ToolBar';
 
-export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
+export const Editor = ({
+  documentId,
+  editorText,
+  documentName,
+  dispatch,
+  joinedRooms,
+}) => {
   const handleChange = (editorText) => {
     dispatch({
       type: FIELD,
@@ -65,6 +71,7 @@ export const Editor = ({ documentId, editorText, documentName, dispatch }) => {
         editorText={editorText}
         documentName={documentName}
         dispatch={dispatch}
+        joinedRooms={joinedRooms}
       />
       <div onKeyUp={emitDocument}>
         <CKEditor

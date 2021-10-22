@@ -29,6 +29,7 @@ function App() {
         editorText={editorText}
         documentName={documentName}
         dispatch={dispatch}
+        joinedRooms={joinedRooms}
       />
       <AllDocumentsList
         dispatch={dispatch}
