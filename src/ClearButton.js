@@ -1,18 +1,13 @@
 import React from 'react';
-import {
-  CLEAR_SUCCESS,
-  LEAVE_ROOM,
-  RESET,
-  SUCCESS,
-  TIME_FOR_CLEARING_SETTIMEOUT,
-} from './documentReducer.js';
+import { LEAVE_ROOM, RESET, SUCCESS } from './documentReducer.js';
 import { ClearDocument } from './ClearDocument.js';
 import { socket } from './socket.js';
+import { dispatchFlashMessage } from './dispatchFlashMessage.js';
 
-export function ClearButton(props) {
+export function ClearButton({ joinedRooms, dispatch }) {
   function leaveAllRooms() {
-    props.joinedRooms.forEach((room) => {
-      props.dispatch({
+    joinedRooms?.forEach((room) => {
+      dispatch({
         type: LEAVE_ROOM,
         payload: room,
       });
@@ -22,19 +17,15 @@ export function ClearButton(props) {
   return (
     <button // className="ql-save"
       onClick={() => {
-        props.dispatch({
+        dispatch({
           type: RESET,
         });
-        props.dispatch({
-          type: SUCCESS,
+        dispatchFlashMessage({
+          dispatch,
           payload: 'Changes trashed, new document ready',
+          type: SUCCESS,
         });
         leaveAllRooms();
-        setTimeout(() => {
-          props.dispatch({
-            type: CLEAR_SUCCESS,
-          });
-        }, TIME_FOR_CLEARING_SETTIMEOUT);
       }}
     >
       <ClearDocument />

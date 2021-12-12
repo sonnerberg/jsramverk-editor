@@ -5,6 +5,7 @@ export function ErrorMessage({ error }) {
         color: 'red',
         position: 'absolute',
         top: '0',
+        width: '400px',
         marginLeft: 'auto',
         marginRight: 'auto',
         left: 0,

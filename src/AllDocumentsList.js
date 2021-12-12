@@ -10,12 +10,29 @@ import {
 import { getFetchURL } from './utils/getFetchURL';
 import parse from 'html-react-parser';
 import { socket } from './socket';
+import { useNavigate } from 'react-router-dom';
+import { dispatchFlashMessage } from './dispatchFlashMessage';
 
-export function AllDocumentsList({ dispatch, allDocuments, joinedRooms }) {
-  let fetchURL = getFetchURL();
+export function AllDocumentsList({
+  dispatch,
+  allDocuments,
+  joinedRooms,
+  dispatchUser,
+}) {
+  const navigate = useNavigate();
+  let fetchURL = `${getFetchURL()}/api/v1`;
   useEffect(() => {
-    fetch(fetchURL)
-      .then((response) => response.json())
+    fetch(fetchURL, { credentials: 'include' })
+      .then((response) => {
+        if (
+          response.status === 404 &&
+          response.redirected === true &&
+          response.statusText === 'Not Found'
+        ) {
+          // Will go to .catch
+          return;
+        } else return response.json();
+      })
       .then((result) =>
         result.data
           ? dispatch({
@@ -25,29 +42,40 @@ export function AllDocumentsList({ dispatch, allDocuments, joinedRooms }) {
             })
           : (console.error(result.errors.message),
             dispatch({ type: ERROR, payload: result.errors.message }))
-      );
-  }, [dispatch, fetchURL]);
+      )
+      .catch(() => {
+        dispatchFlashMessage({
+          dispatch,
+          payload: 'Need to be logged in to use editor',
+          type: ERROR,
+        });
+        navigate('/login');
+      });
+  }, [dispatch, fetchURL, navigate, dispatchUser]);
 
   useEffect(() => {
+    // TODO: Think about if this is needed. New documents cannot be shared when created.
     socket.on('newDocument', ({ id }) => {
       updateDocument(id).then((result) => {
-        dispatch({
-          type: UPDATE_ALL_DOCUMENTS,
-          payload: { _id: id, name: result.name, html: result.html },
-        });
+        if (result) {
+          dispatch({
+            type: UPDATE_ALL_DOCUMENTS,
+            payload: { _id: id, name: result.name, html: result.html },
+          });
+        }
       });
     });
   }, [dispatch]);
 
-  async function updateDocument(id) {
-    const fetchURL = `${getFetchURL()}/${id}`;
-    const result = await fetch(fetchURL)
+  function updateDocument(id) {
+    const fetchURL = `${getFetchURL()}/api/v1/${id}`;
+    const result = fetch(fetchURL, { credentials: 'include' })
       .then((response) => response.json())
       .then((result) => result.data);
     return result;
   }
 
-  function handleClick(event, { id, name, html }) {
+  function handleClick(event, { id }) {
     event.preventDefault();
     updateDocument(id).then((result) => {
       joinedRooms.forEach((room) => {
@@ -69,11 +97,11 @@ export function AllDocumentsList({ dispatch, allDocuments, joinedRooms }) {
       }
       dispatch({
         type: EDIT,
-        payload: { id, name: result.name, html: result.html },
+        payload: { id, name: result.name, html: result.text },
       });
       dispatch({
         type: UPDATE_ALL_DOCUMENTS,
-        payload: { _id: id, name: result.name, html: result.html },
+        payload: { _id: id, name: result.name, html: result.text },
       });
     });
   }

@@ -1,4 +1,4 @@
-export const TIME_FOR_CLEARING_SETTIMEOUT = 2500;
+export const TIME_FOR_CLEARING_SETTIMEOUT = 3500;
 
 export const RESET = 'RESET';
 export const FIELD = 'FIELD';
@@ -11,7 +11,9 @@ export const UPDATE_ALL_DOCUMENTS = 'UPDATE_ALL_DOCUMENTS';
 export const JOIN_ROOM = 'JOIN_ROOM';
 export const LEAVE_ROOM = 'LEAVE_ROOM';
 
-export const initialState = {
+// TODO: Move success and error to flashMessageReducer
+
+export const initialDocumentReducerState = {
   documentId: null,
   editorText: '',
   documentName: '',
