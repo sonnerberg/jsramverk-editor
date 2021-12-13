@@ -41,16 +41,20 @@ function App() {
   useEffect(() => {
     fetch(`${getFetchURL()}/auth/v1/user`, { credentials: 'include' })
       .then((res) => res.json())
-      .then((result) =>
-        dispatchUser({ type: LOGIN_USER, payload: result.data })
-      );
+      .then((result) => {
+        dispatchUser({ type: LOGIN_USER, payload: result.data });
+      });
   }, []);
 
   return (
     <>
       {error ? <ErrorMessage error={error} /> : null}
       {success ? <SuccessMessage success={success} /> : null}
-      <BrowserRouter>
+      <BrowserRouter
+        basename={
+          process.env.NODE_ENV === 'production' ? '/~pene14/editor' : ''
+        }
+      >
         <nav
           style={{
             display: 'flex',
