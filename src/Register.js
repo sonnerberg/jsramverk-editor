@@ -121,7 +121,7 @@ export function Register({ dispatch, dispatchUser }) {
             />
           </label>
           <button style={{ display: 'block' }} type="submit">
-            Login
+            Register
           </button>
         </div>
       </form>
