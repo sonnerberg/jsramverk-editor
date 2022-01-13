@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { dispatchFlashMessage } from './dispatchFlashMessage';
 import { ERROR, SUCCESS } from './documentReducer';
+import { sendGraphQLQuery } from './sendGraphQLQuery';
 import { LOGIN_USER } from './userReducer';
-import { getFetchURL } from './utils/getFetchURL';
 
 export function Register({ dispatch, dispatchUser }) {
   const [email, setEmail] = useState('');
@@ -11,18 +11,15 @@ export function Register({ dispatch, dispatchUser }) {
 
   async function submitForm(event) {
     event.preventDefault();
-    let requestOptions = {
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    };
     let result;
     try {
-      result = await fetch(`${getFetchURL()}/users/v1/create`, requestOptions);
+      result = await sendGraphQLQuery({
+        query: `mutation {
+          registerUser(email: "${email}" password: "${password}") {
+            message
+          }
+        }`,
+      });
       result = await result.json();
     } catch (error) {
       console.error(error);
@@ -33,12 +30,13 @@ export function Register({ dispatch, dispatchUser }) {
         type: SUCCESS,
         payload: 'Successfully registered',
       });
-      // TODO: login
-      fetch(`${getFetchURL()}/auth/v1/user`, { credentials: 'include' })
-        .then((res) => res.json())
-        .then((result) =>
-          dispatchUser({ type: LOGIN_USER, payload: result.data })
-        );
+      sendGraphQLQuery({
+        query: '{ user { email } }',
+      })
+        .then((result) => result.json())
+        .then((result) => {
+          dispatchUser({ type: LOGIN_USER, payload: result.data.user });
+        });
     } else if (result?.errors) {
       console.error(result.errors);
       const payload =

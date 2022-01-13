@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { getFetchURL } from './utils/getFetchURL';
 import { socket } from './socket';
+import { sendGraphQLQuery } from './sendGraphQLQuery';
 
 export const ShareButton = ({ documentId }) => {
   const [showShare, setShowShare] = useState(false);
   const [usersList, setUsersList] = useState([]);
 
-  let fetchURL = `${getFetchURL()}/users/v1`;
-  let fetchURLAllowEdit = `${getFetchURL()}/users/v1/allowEdit`;
   useEffect(() => {
-    fetch(fetchURL, { credentials: 'include' })
+    sendGraphQLQuery({
+      query: `
+        {users {email _id}}
+      `,
+    })
       .then((result) => result.json())
-      .then((result) => setUsersList(result.data));
-  }, [fetchURL]);
+      .then((result) => setUsersList(result.data.users));
+  }, []);
   return (
     <>
       <button
@@ -30,20 +32,22 @@ export const ShareButton = ({ documentId }) => {
                 <p key={user._id}>
                   <button
                     onClick={() => {
-                      let requestOptions = {
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        method: 'POST',
-                        body: JSON.stringify({
-                          documentToEditId: documentId,
-                          userWhoShouldEditId: user._id,
-                        }),
-                      };
-                      fetch(fetchURLAllowEdit, requestOptions)
+                      sendGraphQLQuery({
+                        query: `
+                        mutation {
+                          allowEdit(documentToEditId: "${documentId}" userWhoShouldEditId: "${user._id}") {
+                            _id
+                            name
+                            text
+                            allowedUsers
+                          }
+                        }`,
+                      })
                         .then((result) => result.json())
-                        .then(() => {
+                        .then((_result) => {
                           socket.emit('newDocument', {
                             id: documentId,
+                            // id: result.data.allowEdit._id,
                           });
                         });
                     }}

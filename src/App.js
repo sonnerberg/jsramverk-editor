@@ -11,13 +11,14 @@ import { SuccessMessage } from './SuccessMessage';
 import {
   initialUserReducerState,
   LOGIN_USER,
+  RESET_USER,
   userReducer,
 } from './userReducer';
-import { getFetchURL } from './utils/getFetchURL';
 
 import { Navigate } from 'react-router-dom';
 import { Login } from './Login';
 import { Register } from './Register';
+import { sendGraphQLQuery } from './sendGraphQLQuery';
 
 function App() {
   const [
@@ -39,10 +40,12 @@ function App() {
   );
 
   useEffect(() => {
-    fetch(`${getFetchURL()}/auth/v1/user`, { credentials: 'include' })
-      .then((res) => res.json())
+    sendGraphQLQuery({
+      query: '{ user { email } }',
+    })
+      .then((result) => result.json())
       .then((result) => {
-        dispatchUser({ type: LOGIN_USER, payload: result.data });
+        dispatchUser({ type: LOGIN_USER, payload: result.data.user });
       });
   }, []);
 
@@ -79,7 +82,15 @@ function App() {
             </div>
             <button
               onClick={() => {
-                window.open(`${getFetchURL()}/auth/v1/logout`, '_self');
+                sendGraphQLQuery({
+                  query: `mutation {
+                              logout {
+                                redirect
+                              }
+                            }`,
+                }).then(() => {
+                  dispatchUser({ type: RESET_USER });
+                });
               }}
             >
               Logout

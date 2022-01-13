@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { dispatchFlashMessage } from './dispatchFlashMessage';
 import { ERROR, SUCCESS } from './documentReducer';
+import { sendGraphQLQuery } from './sendGraphQLQuery';
 import { LOGIN_USER } from './userReducer';
 import { getFetchURL } from './utils/getFetchURL';
 
@@ -33,12 +34,13 @@ export function LoginForm({ dispatch, dispatchUser }) {
         type: SUCCESS,
         payload: 'Successfully logged in',
       });
-      // TODO: Add user to user variable
-      fetch(`${getFetchURL()}/auth/v1/user`, { credentials: 'include' })
-        .then((res) => res.json())
-        .then((result) =>
-          dispatchUser({ type: LOGIN_USER, payload: result.data })
-        );
+      sendGraphQLQuery({
+        query: '{ user { email } }',
+      })
+        .then((result) => result.json())
+        .then((result) => {
+          dispatchUser({ type: LOGIN_USER, payload: result.data.user });
+        });
     } else if (result?.errors?.message) {
       console.error(result.errors);
       const payload = `${result.errors.message}`;

@@ -7,11 +7,11 @@ import {
   LEAVE_ROOM,
   UPDATE_ALL_DOCUMENTS,
 } from './documentReducer';
-import { getFetchURL } from './utils/getFetchURL';
 import parse from 'html-react-parser';
 import { socket } from './socket';
 import { useNavigate } from 'react-router-dom';
 import { dispatchFlashMessage } from './dispatchFlashMessage';
+import { sendGraphQLQuery } from './sendGraphQLQuery';
 
 export function AllDocumentsList({
   dispatch,
@@ -20,9 +20,10 @@ export function AllDocumentsList({
   dispatchUser,
 }) {
   const navigate = useNavigate();
-  let fetchURL = `${getFetchURL()}/api/v1`;
   useEffect(() => {
-    fetch(fetchURL, { credentials: 'include' })
+    sendGraphQLQuery({
+      query: '{ documents { _id name text } }',
+    })
       .then((response) => {
         if (
           response.status === 404 &&
@@ -38,7 +39,7 @@ export function AllDocumentsList({
           ? dispatch({
               type: FIELD,
               fieldName: 'allDocuments',
-              payload: result.data,
+              payload: result.data.documents,
             })
           : (console.error(result.errors.message),
             dispatch({ type: ERROR, payload: result.errors.message }))
@@ -51,12 +52,12 @@ export function AllDocumentsList({
         });
         navigate('/login');
       });
-  }, [dispatch, fetchURL, navigate, dispatchUser]);
+  }, [dispatch, navigate, dispatchUser]);
 
   useEffect(() => {
     // TODO: Think about if this is needed. New documents cannot be shared when created.
     socket.on('newDocument', ({ id }) => {
-      updateDocument(id).then((result) => {
+      getSingleDocument(id).then((result) => {
         if (result) {
           dispatch({
             type: UPDATE_ALL_DOCUMENTS,
@@ -67,17 +68,23 @@ export function AllDocumentsList({
     });
   }, [dispatch]);
 
-  function updateDocument(id) {
-    const fetchURL = `${getFetchURL()}/api/v1/${id}`;
-    const result = fetch(fetchURL, { credentials: 'include' })
+  function getSingleDocument(id) {
+    const result = sendGraphQLQuery({
+      query: `{ document(id: "${id}") {
+          _id
+          name
+          text
+        }
+      }`,
+    })
       .then((response) => response.json())
-      .then((result) => result.data);
+      .then((result) => result.data.document);
     return result;
   }
 
   function handleClick(event, { id }) {
     event.preventDefault();
-    updateDocument(id).then((result) => {
+    getSingleDocument(id).then((result) => {
       joinedRooms.forEach((room) => {
         if (room !== id) {
           dispatch({
