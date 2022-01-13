@@ -10,6 +10,7 @@ export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
 export const UPDATE_ALL_DOCUMENTS = 'UPDATE_ALL_DOCUMENTS';
 export const JOIN_ROOM = 'JOIN_ROOM';
 export const LEAVE_ROOM = 'LEAVE_ROOM';
+export const CLEAR_ALL_DOCUMENTS = 'CLEAR_ALL_DOCUMENTS';
 
 // TODO: Move success and error to flashMessageReducer
 
@@ -42,6 +43,11 @@ export function documentReducer(state, action) {
       return {
         ...state,
         [action.fieldName]: action.payload,
+      };
+    case CLEAR_ALL_DOCUMENTS:
+      return {
+        ...state,
+        allDocuments: [],
       };
     case UPDATE_ALL_DOCUMENTS:
       // check if id exists in allDocuments

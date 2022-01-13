@@ -1,6 +1,7 @@
 import './App.css';
 import { useEffect, useReducer } from 'react';
 import {
+  CLEAR_ALL_DOCUMENTS,
   documentReducer,
   initialDocumentReducerState,
 } from './documentReducer';
@@ -89,6 +90,7 @@ function App() {
                               }
                             }`,
                 }).then(() => {
+                  dispatch({ type: CLEAR_ALL_DOCUMENTS });
                   dispatchUser({ type: RESET_USER });
                 });
               }}
